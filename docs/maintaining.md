@@ -25,7 +25,7 @@ npm run test:integration
 node bin/tui.js --help
 ```
 
-依赖统一从锁定文件恢复，无需 VSCode 插件、运行时下载脚本或项目编译配置。`encoding`、`node-releases` 的 overrides 保留旧编译器兼容；更新依赖时同步维护锁定文件。
+依赖统一从锁定文件恢复，无需 VSCode 插件、运行时下载脚本或项目编译配置。`encoding`、`node-releases` 的 overrides 保留旧编译器兼容；Browserslist 4 固定为兼容的 4.24.5，避免现代 npm 对不兼容的传递版本反复解析。更新依赖时同步维护锁定文件，并验证干净安装。
 
 ## 跨平台兼容
 

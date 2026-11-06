@@ -67,6 +67,7 @@ npm install -g ./touchui-cli-1.1.0.tgz --offline --ignore-scripts --no-audit --n
 | PowerShell 拒绝执行 `tui.ps1` | 使用 `tui.cmd dev` 或 `tui.cmd build` |
 | 找不到项目 | 进入源码目录，或指定 `--project-dir` |
 | Node 版本过低或编译依赖缺失 | 升级到 Node.js 22/24 LTS，或重新安装工具包 |
+| Windows Node 22 原生崩溃，退出码为 3221226505 | 检查 TEMP/TMP，避免使用包含中文的自定义临时目录，重新打开终端后重试 |
 | 页面能打开但接口失败 | 检查后端服务与接口地址 |
 | 部署后仍请求本机接口 | 指定目标环境 `--api-url` 重新构建，并检查独立登录地址 |
 
