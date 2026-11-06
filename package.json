@@ -1,0 +1,31 @@
+{
+  "name": "touchui-cli",
+  "version": "1.0.1",
+  "description": "独立运行 TouchUI 项目的开发与打包工具",
+  "license": "UNLICENSED",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/xih888/touchui-cli.git"
+  },
+  "homepage": "https://github.com/xih888/touchui-cli#readme",
+  "bugs": {"url": "https://github.com/xih888/touchui-cli/issues"},
+  "keywords": ["touchui", "cli", "h5", "development", "build"],
+  "os": ["win32"],
+  "cpu": ["x64"],
+  "files": ["bin/", "cli.js", "runtime/", "README.md"],
+  "bundleDependencies": ["touchui-pack"],
+  "scripts": {"test": "node test/cli.test.js", "runtime:prepare": "powershell.exe -NoProfile -File scripts/prepare-runtime.ps1"},
+  "bin": {
+    "tui": "bin/tui.js"
+  },
+  "engines": {
+    "node": ">=16"
+  },
+  "dependencies": {
+    "touchui-pack": "1.9.37"
+  },
+  "overrides": {
+    "encoding": "0.1.13",
+    "node-releases": "2.0.27"
+  }
+}
