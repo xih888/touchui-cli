@@ -2,6 +2,7 @@
 
 [![npm 版本](https://img.shields.io/npm/v/touchui-cli.svg)](https://www.npmjs.com/package/touchui-cli)
 [![跨平台验证](https://github.com/xih888/touchui-cli/actions/workflows/verify.yml/badge.svg)](https://github.com/xih888/touchui-cli/actions/workflows/verify.yml)
+[![许可](https://img.shields.io/npm/l/touchui-cli.svg)](https://github.com/xih888/touchui-cli/blob/main/LICENSE)
 [![支持平台](https://img.shields.io/badge/platform-Windows%20%7C%20macOS-blue)](https://github.com/xih888/touchui-cli#环境要求)
 
 TouchUI 网页/H5 项目的独立开发与构建工具。安装一次，在项目中执行 `tui dev` 开发、`tui build` 打包。
@@ -81,4 +82,4 @@ GitHub 仓库保存源码、测试、依赖锁定和文档；`node_modules`、�
 
 ## 许可
 
-当前自编代码的许可标记为 `UNLICENSED`，尚未授予开源许可。第三方编译器及依赖保留各自许可证。
+本工具自编代码采用 [MIT 许可](https://github.com/xih888/touchui-cli/blob/main/LICENSE)，允许使用、修改、分发和商用，需保留版权及许可声明。第三方编译器及依赖保留各自许可证。

@@ -2,6 +2,7 @@
 
 ## 1.1.0
 
+- 自编代码采用 MIT 开源许可，支持使用、修改、分发和商用。
 - 支持 Windows x64、Intel Mac 和 Apple Silicon Mac，共用相同安装命令。
 - 使用宿主 Node，兼容旧 Webpack，移除 npm 包内的 Node/npm 运行时和便携版入口。
 - 关联 GitHub 仓库、主页和问题反馈，整理首页、使用指南及维护文档。
