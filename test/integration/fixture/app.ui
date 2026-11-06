@@ -1,0 +1,10 @@
+<template><ui-view><router-view></router-view></ui-view></template>
+<script>
+export default {
+    config: {
+        pages: ['pages/index'],
+        networkBaseUrl: 'http://127.0.0.1:1',
+        window: { navigationBarTitleText: '跨平台验证' }
+    }
+}
+</script>

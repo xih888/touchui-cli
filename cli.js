@@ -73,7 +73,7 @@ function resolveOutput(projectRoot, outputDir) {
     let existing = requested;
     while (!fs.existsSync(existing)) existing = path.dirname(existing);
     const output = path.resolve(fs.realpathSync(existing), path.relative(existing, requested));
-    if (output.toLowerCase() !== requested.toLowerCase()) throw new Error('输出目录不能包含符号链接或目录连接。');
+    if (process.platform === 'win32' ? output.toLowerCase() !== requested.toLowerCase() : output !== requested) throw new Error('输出目录不能包含符号链接或目录连接。');
     const cliRoot = fs.realpathSync(__dirname);
     for (const source of [projectRoot, cliRoot]) {
         const fromOutput = path.relative(output, source);
@@ -97,7 +97,7 @@ function isSource(projectRoot, file) {
         !['dist', 'tooling', 'package.json', 'package-lock.json', 'yarn.lock', 'pnpm-lock.yaml', 'README.md'].includes(parts[0]);
 }
 
-/** 同步业务源码，静态目录同时作为开发服务的资源目录。 */
+/** 同步业务源码；单文件使用复制接口兼容中文路径，静态目录同时提供开发资源。 */
 function syncSource(projectRoot, runtimeRoot, file) {
     const relative = path.relative(projectRoot, file);
     const targets = [path.join(runtimeRoot, 'src', relative)];
@@ -105,12 +105,14 @@ function syncSource(projectRoot, runtimeRoot, file) {
     targets.forEach(target => {
         if (fs.existsSync(file)) {
             fs.mkdirSync(path.dirname(target), { recursive: true });
-            fs.cpSync(file, target, { recursive: true, filter: source => isSource(projectRoot, source) });
+            if (fs.statSync(file).isDirectory()) {
+                fs.cpSync(file, target, { recursive: true, filter: source => isSource(projectRoot, source) });
+            } else fs.copyFileSync(file, target);
         } else fs.rmSync(target, { recursive: true, force: true });
     });
 }
 
-/** 为每个项目、每次运行创建独立临时目录，兼容旧加载器的相对路径。 */
+/** 隔离每次编译缓存，兼容旧加载器路径；运行版本由 CLI 入口检查。 */
 function prepareRuntime(projectRoot, mode) {
     const dependencies = path.dirname(toolchain);
     const key = crypto.createHash('sha256').update(projectRoot).digest('hex').slice(0, 12);
@@ -126,16 +128,19 @@ function prepareRuntime(projectRoot, mode) {
     }
     process.once('exit', cleanup);
     fs.symlinkSync(dependencies, path.join(runRoot, 'node_modules'), process.platform === 'win32' ? 'junction' : 'dir');
+    // 显式过滤器兼容 Windows 上的中文安装路径。
     ['touchui-loader', 'touchui-pre-loader'].forEach(name => {
-        fs.cpSync(path.join(dependencies, name), path.join(runRoot, 'work/node_modules', name), { recursive: true });
+        fs.cpSync(path.join(dependencies, name), path.join(runRoot, 'work/node_modules', name), { recursive: true, filter: () => true });
     });
     ['build', 'config', 'utils', 'i18n', 'index.html', 'package.json', '.babelrc'].forEach(name => {
-        fs.cpSync(path.join(toolchain, name), path.join(runtimeRoot, name), { recursive: true });
+        fs.cpSync(path.join(toolchain, name), path.join(runtimeRoot, name), { recursive: true, filter: () => true });
     });
     fs.appendFileSync(path.join(runtimeRoot, 'build/webpack.base.conf.js'), '\nmodule.exports.resolve.symlinks = false;\n');
-    // 固定本机监听，避免旧开发服务器默认监听全部网卡。
+    // 固定本机监听；依赖已随 CLI 安装，开发服务器无需另外调用 npm 检查版本。
     const serverFile = path.join(runtimeRoot, 'build/dev-server.js');
-    fs.writeFileSync(serverFile, fs.readFileSync(serverFile, 'utf8').replace('app.listen(port)', "app.listen(port, '127.0.0.1')"));
+    fs.writeFileSync(serverFile, fs.readFileSync(serverFile, 'utf8')
+        .replace("require('./check-versions')()", "// CLI 入口已检查 Node 版本。")
+        .replace('app.listen(port)', "app.listen(port, '127.0.0.1')"));
     fs.mkdirSync(path.join(runtimeRoot, 'src'), { recursive: true });
     fs.readdirSync(projectRoot).filter(name => isSource(projectRoot, path.join(projectRoot, name)))
         .forEach(name => syncSource(projectRoot, runtimeRoot, path.join(projectRoot, name)));
@@ -169,7 +174,8 @@ function publishOutput(built, output) {
     const staging = fs.mkdtempSync(path.join(parent, '.tui-output-'));
     const previous = staging + '-previous';
     try {
-        fs.cpSync(built, staging, { recursive: true });
+        // 显式过滤器使用兼容复制路径，避免 Windows Node 22 原生复制中文目录时崩溃。
+        fs.cpSync(built, staging, { recursive: true, filter: () => true });
         if (fs.existsSync(output)) fs.renameSync(output, previous);
         try { fs.renameSync(staging, output); }
         catch (error) {

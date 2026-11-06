@@ -4,14 +4,14 @@
 
 进入现有 TouchUI 源码目录，该目录应包含 `app.ui`、`main.js` 及项目原有页面、组件和资源：
 
-```powershell
-cd D:\projects\my-app
+```shell
+cd path/to/my-app
 tui dev
 ```
 
 默认仅监听本机 `127.0.0.1`，从 9090 开始选择可用端口，以终端输出为准。源码修改后自动重新编译，按 Ctrl+C 停止。
 
-```powershell
+```shell
 tui dev --port 9091
 tui dev --api-url http://127.0.0.1:8190/home_api
 ```
@@ -20,16 +20,16 @@ tui dev --api-url http://127.0.0.1:8190/home_api
 
 命令从当前目录向上查找最近的项目，不会自动进入下级 `app_code`；可显式指定：
 
-```powershell
-tui dev --project-dir D:\projects\my-app
+```shell
+tui dev --project-dir path/to/my-app
 ```
 
 ## 构建
 
-```powershell
+```shell
 tui build
 tui build --api-url https://example.com/api/home_api
-tui build --output-dir D:\release\my-app
+tui build --output-dir ../release/my-app
 ```
 
 默认输出到项目 `dist`。相对路径以项目目录为基准；项目内部只允许输出到 `dist`，其他输出需使用项目外专用目录。禁止输出到源码、工具目录及其上级，禁止使用符号链接或目录连接作为输出路径。
@@ -49,28 +49,28 @@ tui build --output-dir D:\release\my-app
 | `--help`、`-h` | 所有 | 显示帮助，无参数时也显示帮助 |
 | `--version`、`-v` | 所有 | 显示版本 |
 
-## 离线使用
+## 离线安装
 
-已有 npm 的电脑可从下载好的归档安装：
+安装环境需要已有 Node.js >= 16.20.2 和 npm。将维护者提供的完整 npm 归档复制到目标电脑后执行：
 
-```powershell
-npm install -g .\touchui-cli-1.0.1.tgz --offline --ignore-scripts --no-audit --no-fund
+```shell
+npm install -g ./touchui-cli-1.1.0.tgz --offline --ignore-scripts --no-audit --no-fund
 ```
 
-完整便携版 ZIP 解压到固定目录后，执行该目录的 `install.ps1`，将工具加入当前用户 PATH，再重新打开终端。便携版无需预装 Node/npm；也可直接调用目录内的 `tui.cmd`。本地归档和便携 ZIP 由维护者另外分发，npm 安装不需要它们。
+归档包含编译依赖，工具运行期间不自动下载依赖。Windows、Intel Mac 和 Apple Silicon Mac 使用同一份 npm 包。
 
 ## 常见问题
 
 | 现象 | 处理 |
 | --- | --- |
-| 找不到 `tui` | 重新打开终端，检查全局 npm 路径或便携目录是否在 PATH |
+| 找不到 `tui` | 重新打开终端，检查全局 npm 路径是否在 PATH |
 | PowerShell 拒绝执行 `tui.ps1` | 使用 `tui.cmd dev` 或 `tui.cmd build` |
 | 找不到项目 | 进入源码目录，或指定 `--project-dir` |
-| 找不到运行时、编译器或编译依赖 | 重新安装完整工具包 |
+| Node 版本过低或编译依赖缺失 | 升级到 Node.js 22/24 LTS，或重新安装工具包 |
 | 页面能打开但接口失败 | 检查后端服务与接口地址 |
 | 部署后仍请求本机接口 | 指定目标环境 `--api-url` 重新构建，并检查独立登录地址 |
 
-编译缓存位于 `%TEMP%\touchui-cli\<项目路径摘要>\<本次运行目录>`，正常退出及 Ctrl+C 后清理。本工具不使用项目 `.touchui`；强制结束进程可能留下临时缓存，停止全部 `tui` 进程后可清理。
+编译缓存位于系统临时目录下的 `touchui-cli/<项目路径摘要>/<本次运行目录>`；Windows 对应 `%TEMP%`，macOS 对应系统 `TMPDIR`，正常退出及 Ctrl+C 后清理。本工具不使用项目 `.touchui`；强制结束进程可能留下临时缓存，停止全部 `tui` 进程后可清理。
 
 ## WindTerm
 

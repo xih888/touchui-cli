@@ -1,0 +1,4 @@
+<template><ui-view>TouchUI 跨平台验证</ui-view></template>
+<script>
+export default { config: { navigationBarTitleText: '验证首页' } }
+</script>

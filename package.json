@@ -1,6 +1,6 @@
 {
   "name": "touchui-cli",
-  "version": "1.0.1",
+  "version": "1.1.0",
   "description": "独立运行 TouchUI 项目的开发与打包工具",
   "license": "UNLICENSED",
   "repository": {
@@ -8,18 +8,41 @@
     "url": "git+https://github.com/xih888/touchui-cli.git"
   },
   "homepage": "https://github.com/xih888/touchui-cli#readme",
-  "bugs": {"url": "https://github.com/xih888/touchui-cli/issues"},
-  "keywords": ["touchui", "cli", "h5", "development", "build"],
-  "os": ["win32"],
-  "cpu": ["x64"],
-  "files": ["bin/", "cli.js", "runtime/", "README.md"],
-  "bundleDependencies": ["touchui-pack"],
-  "scripts": {"test": "node test/cli.test.js", "runtime:prepare": "powershell.exe -NoProfile -File scripts/prepare-runtime.ps1"},
+  "bugs": {
+    "url": "https://github.com/xih888/touchui-cli/issues"
+  },
+  "keywords": [
+    "touchui",
+    "cli",
+    "h5",
+    "development",
+    "build"
+  ],
+  "os": [
+    "win32",
+    "darwin"
+  ],
+  "cpu": [
+    "x64",
+    "arm64"
+  ],
+  "files": [
+    "bin/",
+    "cli.js",
+    "README.md"
+  ],
+  "bundleDependencies": [
+    "touchui-pack"
+  ],
+  "scripts": {
+    "test": "node test/cli.test.js",
+    "test:integration": "node test/integration/cli.test.js"
+  },
   "bin": {
     "tui": "bin/tui.js"
   },
   "engines": {
-    "node": ">=16"
+    "node": ">=16.20.2"
   },
   "dependencies": {
     "touchui-pack": "1.9.37"

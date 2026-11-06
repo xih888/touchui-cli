@@ -1,0 +1,4 @@
+<template><ui-view>页面不存在</ui-view></template>
+<script>
+export default { config: { navigationBarTitleText: '页面不存在' } }
+</script>

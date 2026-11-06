@@ -1,6 +1,5 @@
 /node_modules/
-/runtime/*
-!/runtime/LICENSE
+/runtime/
 *.tgz
 *.zip
 npm-debug.log*

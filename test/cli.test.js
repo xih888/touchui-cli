@@ -5,7 +5,7 @@ const path = require('path');
 const { spawnSync } = require('child_process');
 const cli = require('../cli');
 
-const root = fs.mkdtempSync(path.join(os.tmpdir(), 'tui-tests-'));
+const root = fs.realpathSync(fs.mkdtempSync(path.join(os.tmpdir(), 'tui-tests-')));
 const project = path.join(root, '中文 项目');
 fs.mkdirSync(path.join(project, 'pages'), { recursive: true });
 const appFile = path.join(project, 'app.ui');
@@ -26,7 +26,7 @@ try {
     assert.throws(() => cli.resolveOutput(project, 'pages'), /项目内仅允许/);
     assert.throws(() => cli.resolveOutput(project, path.resolve(__dirname, '..')), /工具目录/);
     const alias = path.join(root, '源码连接');
-    fs.symlinkSync(project, alias, 'junction');
+    fs.symlinkSync(project, alias, process.platform === 'win32' ? 'junction' : 'dir');
     assert.throws(() => cli.resolveOutput(project, alias), /输出目录/);
     assert.strictEqual(cli.resolveOutput(project), path.join(project, 'dist'));
 
@@ -35,7 +35,7 @@ try {
     fs.mkdirSync(path.join(configRoot, 'src'));
     fs.copyFileSync(path.join(__dirname, '../node_modules/touchui-pack/build/config-util.js'), path.join(configRoot, 'build/config-util.js'));
     fs.copyFileSync(path.join(__dirname, '../node_modules/touchui-pack/build/ast-util.js'), path.join(configRoot, 'build/ast-util.js'));
-    fs.symlinkSync(path.join(__dirname, '../node_modules'), path.join(configRoot, 'node_modules'), 'junction');
+    fs.symlinkSync(path.join(__dirname, '../node_modules'), path.join(configRoot, 'node_modules'), process.platform === 'win32' ? 'junction' : 'dir');
     const runtime = { runtimeRoot: configRoot };
     // 使用真实配置解析器，验证单行配置的接口覆盖和重新加载。
     const configUtil = require(path.join(configRoot, 'build/config-util'));
