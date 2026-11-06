@@ -10,6 +10,12 @@ const project = path.join(root, '中文项目');
 const bin = path.resolve(__dirname, '../../bin/tui.js');
 // 使用兼容复制路径，验证项目名称包含中文的真实场景。
 fs.cpSync(path.join(__dirname, 'fixture'), project, { recursive: true, filter: () => true });
+// macOS 的系统临时目录可能经由符号链接，使用真实别名验证接口覆盖仍生效。
+const tempDirectory = path.join(root, 'temp');
+const tempAlias = path.join(root, 'temp-link');
+fs.mkdirSync(tempDirectory);
+fs.symlinkSync(tempDirectory, tempAlias, process.platform === 'win32' ? 'junction' : 'dir');
+const childEnv = { ...process.env, TEMP: tempAlias, TMP: tempAlias, TMPDIR: tempAlias };
 
 /** 在本机分配测试端口，避免占用固定的用户服务端口。 */
 function listen(server) {
@@ -61,7 +67,7 @@ async function main() {
     try {
         const apiUrl = 'https://example.invalid/tui-api';
         const built = spawnSync(process.execPath, [bin, 'build', '--project-dir', project, '--api-url', apiUrl], {
-            encoding: 'utf8', timeout: 120000
+            encoding: 'utf8', timeout: 120000, env: childEnv
         });
         assert.strictEqual(built.status, 0, built.stdout + built.stderr);
         const dist = path.join(project, 'dist');
@@ -79,7 +85,8 @@ async function main() {
         await new Promise(resolve => probe.close(resolve));
         const flags = Number(process.versions.openssl.split('.')[0]) >= 3 ? ['--openssl-legacy-provider'] : [];
         child = spawn(process.execPath, [...flags, bin, 'dev', '--project-dir', project,
-            '--port', String(devPort), '--api-url', 'http://127.0.0.1:' + apiPort], { stdio: ['ignore', 'pipe', 'pipe'] });
+            '--port', String(devPort), '--api-url', 'http://127.0.0.1:' + apiPort],
+            { stdio: ['ignore', 'pipe', 'pipe'], env: childEnv });
         child.stdout.on('data', data => { logs += data; });
         child.stderr.on('data', data => { logs += data; });
         await waitFor(async () => {

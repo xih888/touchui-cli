@@ -5,7 +5,8 @@ const crypto = require('crypto');
 const { version } = require('./package.json');
 
 const toolchain = path.join(__dirname, 'node_modules/touchui-pack');
-const cacheRoot = path.join(os.tmpdir(), 'touchui-cli');
+// 使用真实临时目录兼容 macOS 路径别名和旧编译器的路径比较。
+const cacheRoot = path.join(fs.realpathSync(os.tmpdir()), 'touchui-cli');
 
 /** 显示当前版本和实际支持的命令参数。 */
 function printHelp() {
